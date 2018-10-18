@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+	http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	http://www.springframework.org/schema/context 
+	http://www.springframework.org/schema/context/spring-context-3.0.xsd
+	http://www.springframework.org/schema/mvc 
+	http://www.springframework.org/schema/mvc/spring-mvc.xsd
+	">
+
+<!-- 日期和Double类型转换 -->
+	<bean id="converter" 
+	class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
+	<property name="converters">
+	<list>
+    <bean class="com.zgc.tool.ConvertDate"></bean>
+	<bean class="com.zgc.tool.ConvertDouble"></bean>
+	</list>
+	</property>
+	</bean>
+	<!-- 配置注解的处理器映射器和处理器适配器 -->
+    <mvc:annotation-driven conversion-service="converter"></mvc:annotation-driven>
+	
+	<!-- 使用组件扫描的方式可以一次扫描多个Controller -->
+	<context:component-scan base-package="com" />
+
+	
+	<!-- 页面控制 -->
+	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="maxUploadSize" value="5000000" />
+		<property name="defaultEncoding" value="UTF-8" />
+	</bean>
+
+	<mvc:resources location="/ResourceStatic/" mapping="/res/**" />
+	
+    
+    <!-- 自定义拦截器 -->
+	<mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/**" /><!-- path里放请求地址，拦截 -->
+			<mvc:mapping path="/" />
+			<bean class="com.zgc.intercept.PageIntercept"></bean>
+		</mvc:interceptor>
+		
+		<mvc:interceptor>
+			<mvc:mapping path="/manage/**" />
+			<mvc:mapping path="/customs/**" />
+			<mvc:mapping path="/employee/**" />
+			<mvc:mapping path="/merch/**" />
+			<mvc:mapping path="/proffer/**" />
+			<mvc:mapping path="/sale/**" />
+			<mvc:mapping path="/store/**" />
+			<bean class="com.zgc.intercept.UserManageIntercept"></bean>
+		</mvc:interceptor>
+	</mvc:interceptors>
+
+    <!-- 解决中文乱码问题 -->
+	<mvc:annotation-driven>
+		<mvc:message-converters>
+			<bean class="org.springframework.http.converter.StringHttpMessageConverter">
+				<property name="supportedMediaTypes">
+					<list>
+						<value>
+							application/json;charset=UTF-8
+						</value>
+						<value>
+							application/xml;charset=UTF-8
+						</value>
+					</list>
+				</property>
+			</bean>
+
+			<bean
+				class="com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter">
+				<property name="supportedMediaTypes">
+					<list>
+						<value>text/html;charset=utf-8</value>
+						<value>application/json</value>
+						<value>application/xml</value>
+					</list>
+				</property>
+				<property name="features">
+					<list>
+						<value>WriteDateUseDateFormat</value>
+					</list>
+				</property>
+			</bean>
+		</mvc:message-converters>
+	</mvc:annotation-driven>
+
+	<bean
+		class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+		<property name="favorParameter" value="true"></property>
+		<property name="defaultContentType" value="text/html"></property>
+		<property name="mediaTypes">
+			<map>
+				<entry key="html" value="text/html;charset=UTF-8" />
+				<entry key="json" value="application/json;charset=UTF-8" />
+				<entry key="xml" value="application/xml;charset=UTF-8" />
+			</map>
+		</property>
+		<property name="viewResolvers">
+			<list>
+				<bean
+					class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+					<property name="prefix" value="/WEB-INF/car/"></property><!-- 前缀 -->
+					<property name="suffix" value=".jsp"></property><!-- 后缀 -->
+				</bean>
+			</list>
+		</property>
+	</bean>
+	
+</beans>

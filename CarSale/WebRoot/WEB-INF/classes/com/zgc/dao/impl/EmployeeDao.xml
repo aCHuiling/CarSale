@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zgc.dao.EmployeeDao">
+<!-- 根据职工姓名获取id -->
+<!-- 根据职工名判断职工存不存在 -->
+<!-- 根据登录所得的的id查询职工名字 -->
+<select id="getEmployeeByEmployee" parameterType="Employee" resultType="Employee">
+SELECT * FROM employee
+<where>
+<if test="name!=null and name!=''">
+and name=#{name}
+</if>
+<if test="staffid>0">
+and staffid=#{staffid}
+</if>
+</where>
+</select>
+
+<!-- 职工存在（职工姓名）的情况下判断有没有有用户 -->
+<select id="getEmployeeByisEmployee" parameterType="Employee" resultType="Employee">
+SELECT * FROM employee 
+<where>
+staffID in (SELECT rowID FROM userbill where `status`='1')
+<if test="name!=null and name!=''">
+and name=#{name}
+</if>
+</where>
+</select>
+
+<insert id="addEmployee" parameterType="Employee">
+INSERT INTO employee(
+<trim suffixOverrides=",">
+<if test="name!=null and name!=''">
+name,
+</if>
+<if test="sex!=null and sex!=''">
+sex,
+</if>
+<if test="diploma!=null and diploma!=''">
+diploma,
+</if>
+<if test="idcard!=null and idcard!=''">
+idcard,
+</if>
+<if test="begindate!=null and begindate!=''">
+begindate,
+</if>
+home,
+empkind,
+salary,
+phone,
+adress,
+empothers,
+</trim>
+)
+VALUES(
+<trim suffixOverrides=",">
+<if test="name!=null and name!=''">
+#{name},
+</if>
+<if test="sex!=null and sex!=''">
+#{sex},
+</if>
+<if test="diploma!=null and diploma!=''">
+#{diploma},
+</if>
+<if test="idcard!=null and idcard!=''">
+#{idcard},
+</if>
+<if test="begindate!=null and begindate!=''">
+#{begindate},
+</if>
+#{home},
+#{empkind},
+#{salary},
+#{phone},
+#{adress},
+#{empothers},
+</trim>
+)
+</insert>
+
+
+<select id="getAllEmployee" parameterType="Employee" resultType="Employee">
+SELECT * FROM employee
+<where>
+<if test="name!=null and name!=''">
+name=#{name}
+</if>
+</where>
+${pageSql}
+</select>
+
+<delete id="delEmployee" parameterType="Employee">
+delete from employee
+<where>
+<if test="staffid>0">
+staffid=#{staffid}
+</if>
+</where>
+</delete>
+
+<update id="updateEmployee" parameterType="Employee">
+UPDATE employee
+<set>
+<if test="name!=null and name!=''">
+name=#{name},
+</if>
+<if test="sex!=null and sex!=''">
+sex=#{sex},
+</if>
+<if test="diploma!=null and diploma!=''">
+diploma=#{diploma},
+</if>
+<if test="idcard!=null and idcard!=''">
+idcard=#{idcard},
+</if>
+<if test="begindate!=null and begindate!=''">
+begindate=#{begindate},
+</if>
+home=#{home},
+empkind=#{empkind},
+salary=#{salary},
+phone=#{phone},
+adress=#{adress},
+empothers=#{empothers},
+</set>
+<where>
+<if test="staffid>0">
+staffid=#{staffid}
+</if>
+</where>
+</update>
+</mapper>

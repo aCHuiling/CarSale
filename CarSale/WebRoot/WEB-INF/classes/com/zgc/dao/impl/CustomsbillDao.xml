@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zgc.dao.CustomsbillDao">
+<insert id="addCustomsbill" parameterType="Customsbill">
+INSERT INTO customsbill(
+<trim suffixOverrides=",">
+<if test="custname!=null and custname!=''">
+custname,
+</if>
+<if test="custsex!=null and custsex!=''">
+custsex,
+</if>
+<if test="custage!=null and custage!=''">
+custage,
+</if>
+<if test="custphone!=null and custphone!=''">
+custphone,
+</if>
+<if test="custstatus!=null and custstatus!=''">
+custstatus,
+</if>
+</trim>
+)
+VALUES(
+<trim suffixOverrides=",">
+<if test="custname!=null and custname!=''">
+#{custname},
+</if>
+<if test="custsex!=null and custsex!=''">
+#{custsex},
+</if>
+<if test="custage!=null and custage!=''">
+#{custage},
+</if>
+<if test="custphone!=null and custphone!=''">
+#{custphone},
+</if>
+<if test="custstatus!=null and custstatus!=''">
+#{custstatus},
+</if>
+</trim>
+)
+</insert>
+
+<update id="updateCustomsbill" parameterType="Customsbill">
+UPDATE customsbill
+<set>
+<if test="custname!=null and custname!=''">
+custname=#{custname},
+</if>
+<if test="custsex!=null and custsex!=''">
+custsex=#{custsex},
+</if>
+<if test="custage!=null and custage!=''">
+custage=#{custage},
+</if>
+<if test="custphone!=null and custphone!=''">
+custphone=#{custphone},
+</if>
+<if test="custstatus!=null and custstatus!=''">
+custstatus=#{custstatus}
+</if>
+</set>
+<where>
+<if test="customsid>0">
+customsid=#{customsid}
+</if>
+</where>
+</update>
+
+<select id="getAllCustomsbill" parameterType="Customsbill" resultType="Customsbill">
+SELECT * from customsbill
+<where>
+custstatus='1'
+<if test="custname!=null and custname!=''">
+and custname=#{custname}
+</if>
+</where>
+${pageSql}
+</select>
+
+<select id="getCustomsbillByCustomsbill" parameterType="Customsbill" resultType="Customsbill">
+SELECT * from customsbill
+<where>
+<if test="customsid>0">
+customsid=#{customsid}
+</if>
+<if test="custname!=null and custname!=''">
+and custname=#{custname}
+</if>
+</where>
+</select>
+</mapper>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zgc.dao.SysFunctionDao">
+<select id="getAllFuncByUser" parameterType="Userbill" resultType="SysFunction">
+SELECT * FROM sys_function f
+WHERE f.parentid=#{parentid} and f.rowId in(
+SELECT funcId FROM role_func 
+WHERE roleId in(
+SELECT roleId FROM user_role
+WHERE userId=#{rowid} and `STATUS`=#{status}
+)and `STATUS`=#{status}
+)and `STATUS`=#{status}
+</select>
+
+<select id="getAllSysFunction" parameterType="SysFunction" resultType="SysFunction">
+SELECT * from sys_function
+<where>
+<if test="status!=null">
+and `STATUS`=#{status}
+</if>
+</where>
+</select>
+
+<!-- 根据选中的二级id获取相应的信息（父级id） -->
+<select id="getSysFunctionBySysFuncId" parameterType="SysFunction" resultType="SysFunction">
+SELECT * from sys_function
+<where>
+<if test="rowid>0">
+and rowid=#{rowid}
+</if>
+</where>
+</select>
+</mapper>

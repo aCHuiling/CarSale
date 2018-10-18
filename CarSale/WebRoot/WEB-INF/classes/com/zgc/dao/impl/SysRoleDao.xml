@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zgc.dao.SysRoleDao">
+	<!-- 获取所有系统角色（根据状态，状态为1才显示）/条件（角色名称或者角色代码）查询系统角色/分页 -->
+	<select id="getAllSysRole" parameterType="SysRole" resultType="SysRole">
+		SELECT * FROM sys_role
+		<where>
+				`status`='1'
+			<if test="rolename!=null and rolename!=''">
+				and rolename like CONCAT('%',#{rolename},'%')
+			</if>
+			<if test="rolecode!=null and rolecode!=''">
+				and rolecode=#{rolecode}
+			</if>
+		</where>
+		${pageSql}
+	</select>
+
+	<!-- 根据rowid获取系统角色相关信息 -->
+	<!-- 根据角色名称判断系统角色是否存在 -->
+	<!-- 根据角色代码判断系统角色是否存在 -->
+	<select id="getSysRoleBySysRole" parameterType="SysRole"
+		resultType="SysRole">
+		SELECT * FROM sys_role
+		<where>
+			<if test="rowid>0">
+				and rowid=#{rowid}
+			</if>
+			<if test="rolename!=null and rolename!=''">
+				and rolename=#{rolename}
+			</if>
+			<if test="rolecode!=null and rolecode!=''">
+				and rolecode=#{rolecode}
+			</if>
+			<if test="status!=null and status!=''">
+			    and status=#{status}
+			</if>
+		</where>
+	</select>
+
+	<!-- 修改系统角色 -->
+	<update id="updateSysRole" parameterType="SysRole">
+		UPDATE sys_role
+		<set>
+			<if test="funcname!=null and funcname!=''">
+				funcname=#{funcname},
+			</if>
+			<if test="rolename!=null and rolename!=''">
+				rolename=#{rolename},
+			</if>
+			<if test="rolecode!=null and rolecode!=''">
+				rolecode=#{rolecode},
+			</if>
+			<if test="createdtime==createdtime">
+				createdtime=NOW(),
+			</if><!-- 如果下面的if语句满足条件，保留,，如果不满足则去掉, -->
+			<if test="createdby>0">
+				createdby=#{createdby},
+			</if>
+			<if test="last_upd_time==last_upd_time">
+				last_upd_time=NOW(),
+			</if><!-- 如果下面的if语句满足条件，保留,，如果不满足则去掉, -->
+			<if test="last_upd_by>0">
+				last_upd_by=#{last_upd_by},
+			</if>
+			<if test="status!=null and status!=''">
+			status=#{status},
+			</if>
+		</set>
+		<where>
+			<if test="rowid>0">
+				ROWID=#{rowid}
+			</if>
+		</where>
+	</update>
+
+	<delete id="delSysRole" parameterType="SysRole">
+		UPDATE sys_role SET `status`='0' where ROWID in
+		<foreach collection="idArray" item="idArray" open="("
+			separator="," close=")">
+			#{idArray}
+		</foreach>
+	</delete>
+
+	<!-- 添加系统角色 -->
+	<insert id="addSysRole" parameterType="SysRole">
+		INSERT INTO sys_role(
+		<trim suffixOverrides=",">
+			<if test="rolename!=null and rolename!=''">
+				rolename,
+			</if>
+			<if test="rolecode!=null and rolecode!=''">
+				rolecode,
+			</if>
+			<if test="funcname!=null and funcname!=''">
+				funcname,
+			</if>
+			<if test="createdtime==createdtime">
+				createdtime,
+			</if>
+			<if test="createdby>0">
+				createdby,
+			</if>
+			<if test="last_upd_time==last_upd_time">
+				last_upd_time,
+			</if>
+			<if test="last_upd_by>0">
+				last_upd_by,
+			</if>
+			<if test="status!=null and status!=''">
+			    status,
+			</if>
+		</trim>
+		)
+		VALUES(
+		<trim suffixOverrides=",">
+			<if test="rolename!=null and rolename!=''">
+				#{rolename},
+			</if>
+			<if test="rolecode!=null and rolecode!=''">
+				#{rolecode},
+			</if>
+			<if test="funcname!=null and funcname!=''">
+				#{funcname},
+			</if>
+			<if test="createdtime==createdtime">
+				NOW(),
+			</if>
+			<if test="createdby>0">
+				#{createdby},
+			</if>
+			<if test="last_upd_time==last_upd_time">
+				NOW(),
+			</if>
+			<if test="last_upd_by>0">
+				#{last_upd_by},
+			</if>
+			<if test="status!=null and status!=''">
+			    #{status},
+			</if>
+		</trim>
+		)
+	</insert>
+</mapper>

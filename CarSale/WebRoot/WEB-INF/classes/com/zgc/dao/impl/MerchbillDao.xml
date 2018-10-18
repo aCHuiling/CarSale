@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zgc.dao.MerchbillDao">
+<select id="getAllMerchbill" parameterType="Merchbill" resultType="Merchbill">
+SELECT * FROM merchbill
+<where>
+`status`='1'
+
+<if test="profferid!=null and profferid!=''">
+and profferid=#{profferid}
+</if>
+<if test="fullname!=null and fullname!=''">
+and fullname=#{fullname}
+</if>
+<if test="enginenumber!=null and enginenumber!=''">
+and enginenumber=#{enginenumber}
+</if>
+<if test="vin!=null and vin!=''">
+and vin=#{vin}
+</if>
+</where>
+${pageSql}
+</select>
+
+<!-- 删除车辆信息 -->
+<!-- 修改车辆信息 -->
+<update id="updateMerchbill" parameterType="Merchbill">
+UPDATE merchbill
+<set>
+<if test="status!=null and status!=''">
+`status`=#{status},
+</if>
+<if test="profferid!=null and profferid!=''">
+profferid=#{profferid},
+</if>
+<if test="fullname!=null and fullname!=''">
+fullname=#{fullname},
+</if>
+<if test="enginenumber!=null and enginenumber!=''">
+enginenumber=#{enginenumber},
+</if>
+<if test="vin!=null and vin!=''">
+vin=#{vin},
+</if>
+<if test="color!=null and color!=''">
+color=#{color},
+</if>
+<if test="metricunit!=null and metricunit!=''">
+metricunit=#{metricunit},
+</if>
+<if test="unitcost>0">
+unitcost=#{unitcost},
+</if>
+kind=#{kind},
+birthplace=#{birthplace},
+others=#{others}
+</set>
+<where>
+<if test="merchid>0">
+merchID=#{merchid}
+</if>
+</where>
+</update>
+
+
+<insert id="addMerchbill" parameterType="Merchbill">
+INSERT INTO merchbill(
+<trim suffixOverrides=",">
+<if test="merchid>0">
+merchid,
+</if>
+<if test="profferid!=null and profferid!=''">
+profferid,
+</if>
+<if test="fullname!=null and fullname!=''">
+fullname,
+</if>
+<if test="enginenumber!=null and enginenumber!=''">
+enginenumber,
+</if>
+<if test="vin!=null and vin!=''">
+vin,
+</if>
+<if test="color!=null and color!=''">
+color,
+</if>
+<if test="metricunit!=null and metricunit!=''">
+metricunit,
+</if>
+<if test="unitcost>0">
+unitcost,
+</if>
+kind,
+birthplace,
+others,
+<if test="status!=null and status!=''">
+status,
+</if>
+</trim>
+)
+VALUES(
+<trim suffixOverrides=",">
+<if test="merchid>0">
+#{merchid},
+</if>
+<if test="profferid!=null and profferid!=''">
+#{profferid},
+</if>
+<if test="fullname!=null and fullname!=''">
+#{fullname},
+</if>
+<if test="enginenumber!=null and enginenumber!=''">
+#{enginenumber},
+</if>
+<if test="vin!=null and vin!=''">
+#{vin},
+</if>
+<if test="color!=null and color!=''">
+#{color},
+</if>
+<if test="metricunit!=null and metricunit!=''">
+#{metricunit},
+</if>
+<if test="unitcost>0">
+#{unitcost},
+</if>
+#{kind},
+#{birthplace},
+#{others},
+<if test="status!=null and status!=''">
+#{status},
+</if>
+</trim>
+)
+</insert>
+
+<select id="getMerchbillByMerchbill" parameterType="Merchbill" resultType="Merchbill">
+SELECT * FROM merchbill
+<where>
+<if test="merchid>0">
+and merchid=#{merchid}
+</if>
+<if test="profferid!=null and profferid!=''">
+and profferid=#{profferid}
+</if>
+<if test="fullname!=null and fullname!=''">
+and fullname=#{fullname}
+</if>
+<if test="enginenumber!=null and enginenumber!=''">
+and enginenumber=#{enginenumber}
+</if>
+<if test="vin!=null and vin!=''">
+and vin=#{vin}
+</if>
+<if test="color!=null and color!=''">
+and color=#{color}
+</if>
+<if test="metricunit!=null and metricunit!=''">
+and metricunit=#{metricunit}
+</if>
+<if test="kind!=null and kind!=''">
+and kind=#{kind}
+</if>
+<if test="birthplace!=null and birthplace!=''">
+and birthplace=#{birthplace}
+</if>
+<if test="unitcost>0">
+and unitcost=#{unitcost}
+</if>
+<if test="others!=null and others!=''">
+and others=#{others}
+</if>
+<if test="status!=null and status!=''">
+and status=#{status}
+</if>
+</where>
+</select>
+</mapper>

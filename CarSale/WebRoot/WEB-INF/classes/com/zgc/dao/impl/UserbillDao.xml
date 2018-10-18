@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zgc.dao.UserbillDao">
+	<!-- 登录 -->
+	<!-- 根据用户名查询用户存不存在 -->
+	<select id="getUserbillByUserbill" parameterType="Userbill"
+		resultType="Userbill">
+		SELECT * FROM userbill
+		<where>
+			<if test="username!=null">
+				and userName=#{username}
+			</if>
+			<if test="password!=null">
+				and `passWord`=#{password}
+			</if>
+			<if test="ismanage!=null">
+				and ismanage=#{ismanage}
+			</if>
+			<if test="rowid>0">
+				and rowid=#{rowid}
+			</if>
+			and status=#{status}
+		</where>
+	</select>
+
+    <!-- 根据状态和id查询用户存不存在，如果存在就更新，不存在就添加 -->
+	<select id="getUserbillByUserStatus" parameterType="Userbill"
+		resultType="Userbill">
+		SELECT * FROM userbill
+		<where>
+			<if test="rowid>0">
+				and rowid=#{rowid}
+			</if>
+			and status=#{status}
+		</where>
+	</select>
+
+
+	<resultMap type="Userbill" id="userList">
+		<id property="rowid" column="rowID" />
+		<result property="username" column="userName" />
+		<association property="employee" javaType="Employee">
+			<id property="staffid" column="staffID" />
+			<result property="name" column="name" />
+		</association>
+	</resultMap>
+	<!-- 查询所有用户对应职工 -->
+	<select id="getAllUserbill" parameterType="Userbill" resultMap="userList">
+		SELECT * from employee e,userbill u
+		<where>
+			e.staffID=u.rowID and status='1'
+			<if test="employeeName!=null and employeeName!=''">
+				and e.name LIKE CONCAT('%',#{employeeName},'%')
+			</if>
+		</where>
+		${pageSql}
+	</select>
+
+
+	<!-- 添加用户 -->
+	<insert id="addUserbill" parameterType="Userbill">
+		INSERT INTO userbill(
+		<trim suffixOverrides=",">
+			<if test="rowid>0">
+				rowID,
+			</if>
+			<if test="username!=null and username!=''">
+				userName,
+			</if>
+			<if test="password!=null and password!=''">
+				passWord,
+			</if>
+			<if test="status!=null and status!=''">
+				status,
+			</if>
+			<if test="ismanage>0">
+				isManage,
+			</if>
+			<if test="createdtime!=null">
+				createdtime,
+			</if>
+			<if test="createdby>0">
+				createdby,
+			</if>
+		</trim>
+		)
+		VALUES(
+		<trim suffixOverrides=",">
+			<if test="rowid>0">
+				#{rowid},
+			</if>
+			<if test="username!=null and username!=''">
+				#{username},
+			</if>
+			<if test="password!=null and password!=''">
+				#{password},
+			</if>
+			<if test="status!=null and status!=''">
+				#{status},
+			</if>
+			<if test="ismanage>0">
+				#{ismanage},
+			</if>
+			<if test="createdtime!=null">
+				#{createdtime},
+			</if>
+			<if test="createdby>0">
+				#{createdby},
+			</if>
+		</trim>
+		)
+	</insert>
+
+
+	<!-- 删除用户 -->
+	<delete id="delUserbill" parameterType="Userbill">
+		update Userbill set status='0' WHERE ROWID in
+		<foreach collection="idArray" item="idArray" open="("
+			separator="," close=")">
+			#{idArray}
+		</foreach>
+	</delete>
+
+
+	<!-- 查看当前个人信息，根据当前用户名所得到的id -->
+	<select id="getAllUserbillByEmp" parameterType="Userbill"
+		resultMap="userList">
+		SELECT * from employee e,userbill u
+		<where>
+			<if test="rowid>0">
+				e.staffID=#{rowid} and u.rowID=#{rowid} and status='1'
+			</if>
+		</where>
+	</select>
+
+
+	<!-- 修改个人信息 -->
+	<!-- 根据状态和id查询用户存不存在，如果存在就更新，不存在就添加 -->
+	<update id="updateUserbill" parameterType="Userbill">
+		UPDATE userbill
+		<set>
+			<if test="username!=null and username!=''">
+				userName=#{username},
+			</if>
+			<if test="password!=null and password!=''">
+				`passWord`=#{password},
+			</if>
+			<if test="ismanage!=null and ismanage!=''">
+				ismanage=#{ismanage},
+			</if>
+
+			<if test="status!=null and status!=''">
+				status=#{status},
+			</if>
+			<if test="createdtime!=null">
+				createdtime=#{createdtime},
+			</if>
+			<if test="createdby>0">
+				createdby=#{createdby},
+			</if>
+		</set>
+		<where>
+			<if test="rowid>0">
+				rowid=#{rowid}
+			</if>
+		</where>
+	</update>
+</mapper>

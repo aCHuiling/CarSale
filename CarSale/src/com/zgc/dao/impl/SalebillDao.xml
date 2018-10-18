@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zgc.dao.SalebillDao">
+	<resultMap type="Salebill" id="saleList">
+		<id property="salebillid" column="salebillid" />
+		<association property="employee" javaType="Employee">
+			<id property="staffid" column="staffID" />
+			<result property="name" column="name" />
+		</association>
+		<association property="customs" javaType="Customsbill">
+			<id property="customsid" column="customsid" />
+			<result property="custname" column="custname" />
+		</association>
+		<association property="merchbill" javaType="Merchbill">
+			<id property="merchid" column="merchid" />
+		</association>
+		<association property="importbill" javaType="Importbill">
+			<id property="importbillid" column="importbillid" />
+		</association>
+	</resultMap>
+	<!-- 查询所有用户对应职工 -->
+	<select id="getAllSalebill" parameterType="Salebill" resultMap="saleList">
+		SELECT * FROM salebill s,employee e,customsbill c
+		<where>
+			<if test="salebillid!=null and salebillid!=''">
+				and salebillid=#{salebillid}
+			</if>
+			and s.custID=c.customsID AND s.saleID=e.staffID AND s.salestatus='1'
+		</where>
+		${pageSql}
+		GROUP BY s.saleBillID
+	</select>
+
+	<insert id="addSalebill" parameterType="Salebill">
+		INSERT INTO salebill(
+		<trim suffixOverrides=",">
+			<if test="salebillid!=null and salebillid!=''">
+				salebillid,
+			</if>
+			<if test="merch>0">
+				merch,
+			</if>
+			<if test="salenum>0">
+				salenum,
+			</if>
+			<if test="saledate!=null and saledate!=''">
+				saledate,
+			</if>
+			<if test="custid>0">
+				custid,
+			</if>
+			<if test="saleid>0">
+				saleid,
+			</if>
+			<if test="salestatus!=null and salestatus!=''">
+				salestatus,
+			</if>
+		</trim>
+		)
+		VALUES(
+		<trim suffixOverrides=",">
+			<if test="salebillid!=null and salebillid!=''">
+				#{salebillid},
+			</if>
+			<if test="merch>0">
+				#{merch},
+			</if>
+			<if test="salenum>0">
+				#{salenum},
+			</if>
+			<if test="saledate!=null and saledate!=''">
+				#{saledate},
+			</if>
+			<if test="custid>0">
+				#{custid},
+			</if>
+			<if test="saleid>0">
+				#{saleid},
+			</if>
+			<if test="salestatus!=null and salestatus!=''">
+				#{salestatus},
+			</if>
+		</trim>
+		)
+	</insert>
+
+	<select id="getSalebillBySalebill" parameterType="Salebill"
+		resultType="Salebill">
+		SELECT * FROM salebill
+		<where>
+			<if test="salebillid!=null and salebillid!=''">
+				saleBillID=#{salebillid}
+			</if>
+			<if test="salestatus!=null and salestatus!=''">
+				and salestatus=#{salestatus}
+			</if>
+		</where>
+	</select>
+
+
+	<update id="updateSalebill" parameterType="Salebill">
+		UPDATE salebill
+		<set>
+			<if test="merch>0">
+				merch=#{merch},
+			</if>
+			<if test="salenum>0">
+				salenum=#{salenum},
+			</if>
+			<if test="saledate!=null and saledate!=''">
+				saledate=#{saledate},
+			</if>
+			<if test="custid>0">
+				custid=#{custid},
+			</if>
+			<if test="saleid>0">
+				saleid=#{saleid},
+			</if>
+			<if test="salestatus!=null and salestatus!=''">
+				salestatus=#{salestatus}
+			</if>
+		</set>
+		<where>
+			<if test="salebillid!=null and salebillid!=''">
+				saleBillID=#{salebillid}
+			</if>
+		</where>
+	</update>
+
+
+	<!-- 查询所有销售信息 -->
+	<select id="getAllSalebillSta" parameterType="Salebill"
+		resultMap="saleList">
+		SELECT * FROM (select distinct * from merchbill) m,importbill i,salebill s,employee
+		e,customsbill c
+		<where>
+			m.merchID=i.merchBillID and m.merchID=s.merch AND
+			s.saleID=e.staffID AND s.custID=c.customsID
+			<if test="salebillid!=null and salebillid!=''">
+			and	saleBillID=#{salebillid}
+			</if>
+			<if test="saleid>0">
+			and saleid=#{saleid}
+			</if>
+		</where>
+		GROUP BY s.saleBillID
+		${pageSql}
+	</select>
+	
+	<!-- <select id="getAllSalebillSta" parameterType="Salebill"
+		resultMap="saleList">
+		select s.*,m.*,i.*,e.name,c.* from (select DISTINCT * from salebill) s
+		left join merchbill m on m.merchID=s.merch
+		left join importbill i on m.merchID=i.merchBillID
+		left join employee e on s.saleID=e.staffID
+		left join customsbill c on s.custID=c.customsID
+		${pageSql}
+	</select> -->
+
+
+	<select id="getallSalebillNotPage" parameterType="Salebill"
+		resultMap="saleList">
+		SELECT * FROM merchbill m,importbill i,salebill s,employee e,customsbill c
+		<where>
+			m.merchID=i.merchBillID and m.merchID=s.merch AND s.saleID=e.staffID
+			AND s.custID=c.customsID
+			<if test="saledates!=null and saledates!=''">
+				and s.saledate LIKE CONCAT('%',#{saledates},'%')
+			</if>
+			<if test="saleid>0">
+				and saleid=#{saleid}
+			</if>
+		</where>
+		GROUP BY s.saleBillID
+	</select>
+
+
+
+	<!-- 按日期查询销售信息 -->
+	<select id="getAllSalebillByDate" parameterType="Salebill"
+		resultMap="saleList">
+		SELECT * FROM merchbill m,importbill i,salebill s,employee
+		e,customsbill c
+		<where>
+			m.merchID=i.merchBillID and m.merchID=s.merch AND s.saleID=e.staffID
+			AND s.custID=c.customsID
+			<if test="saledates!=null and saledates!=''">
+				and s.saledate LIKE CONCAT('%',#{saledates},'%')
+			</if>
+			<if test="saleid>0">
+				and saleid=#{saleid}
+			</if>
+		</where>
+		GROUP BY s.saleBillID
+		${pageSql}
+	</select>
+	
+	<select id="getAllSalebillByName" parameterType="Salebill"
+		resultMap="saleList">
+		SELECT * FROM merchbill m,importbill i,salebill s,employee
+		e,customsbill c
+		<where>
+			m.merchID=i.merchBillID and m.merchID=s.merch AND s.saleID=e.staffID
+			AND s.custID=c.customsID
+			<if test="saleid>0">
+				and saleid=#{saleid}
+			</if>
+		</where>
+		GROUP BY s.saleBillID
+		${pageSql}
+	</select>
+
+
+	<!-- 以下都为统计图调用方法 -->
+
+	<select id="getSalebillByName" parameterType="Salebill"
+		resultType="Salebill">
+		select year(s.saleDate)=year(NOW()), e.name
+		salename,sum(m.unitCost*s.saleNum) saletotal
+		from salebill s,merchbill m,employee e WHERE s.merch=m.merchID AND
+		s.saleID=e.staffid
+		and year(s.saleDate)=year(NOW())
+		group by e.name
+	</select>
+
+
+	<select id="getSalebillByYear" parameterType="Salebill"
+		resultType="Salebill">
+		select year(s.saleDate) year,sum(m.unitCost*s.saleNum) saletotal
+		from salebill s,merchbill m WHERE s.merch=m.merchID
+		group by year(s.saleDate)
+	</select>
+
+	<select id="getSalebillByMonth" parameterType="Salebill"
+		resultType="Salebill">
+		select year(NOW()) nowyear, year(s.saleDate) year,month(s.saleDate)
+		moth,sum(m.unitCost*s.saleNum) saletotal
+		from salebill s,merchbill m,employee e WHERE s.merch=m.merchID AND
+		s.saleID=e.staffid
+		and year(s.saleDate)=year(NOW())
+		group by month(s.saleDate)
+	</select>
+
+	<select id="getSalebillBySex" parameterType="Salebill"
+		resultType="Salebill">
+		SELECT c.custsex custsex FROM
+		salebill s LEFT JOIN customsbill c ON s.custID=c.customsID
+	</select>
+
+	<select id="getSalebillByKind" parameterType="Salebill"
+		resultType="Salebill">
+		SELECT c.custsex custsex,m.kind merchkind FROM
+		salebill s,merchbill m,customsbill c
+		WHERE s.merch=m.merchID AND c.customsid=s.custID
+		ORDER BY m.kind
+	</select>
+	<select id="getSalebillByGroup" parameterType="Salebill"
+		resultType="Salebill">
+		SELECT m.kind merchkind FROM
+		salebill s,merchbill m,customsbill c
+		WHERE s.merch=m.merchID AND c.customsid=s.custID
+		GROUP BY m.kind
+	</select>
+</mapper>

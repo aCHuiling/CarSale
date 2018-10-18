@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zgc.dao.StorebillDao">
+<!-- 根据车辆编号查询所有 -->
+<select id="getStorebillByStorebill" parameterType="Storebill" resultType="Storebill">
+SELECT * FROM storebill
+<where>
+<if test="storenum>0">
+and storeNum>=#{storenum}
+</if>
+<if test="tomerchid>0">
+and tomerchid=#{tomerchid}
+</if>
+</where>
+</select>
+
+
+
+<!-- 修改库存数量，销售数量增加库存数量减少，销售数量减少库存数量增加-->
+<!-- 如果库存存在进货时的车辆编号就直接增加库存数量 -->
+<update id="updateStorebill" parameterType="Storebill">
+UPDATE storebill
+<set>
+storeNum=storeNum-#{storenum}
+</set>
+<where>
+<if test="tomerchid>0">
+tomerchid=#{tomerchid}
+</if>
+</where>
+</update>
+
+<!-- 如果库存不存在进货时的车辆编号就增加库存信息 -->
+
+<insert id="addStorebill" parameterType="Storebill">
+INSERT INTO storebill(
+<trim suffixOverrides=",">
+<if test="tomerchid>0">
+tomerchid,
+</if>
+<if test="storenum>0">
+storenum,
+</if>
+<if test="storestatus!=null and storestatus!=''">
+storestatus,
+</if>
+</trim>
+)
+VALUES(
+<trim suffixOverrides=",">
+<if test="tomerchid>0">
+#{tomerchid},
+</if>
+<if test="storenum>0">
+#{storenum},
+</if>
+<if test="storestatus!=null and storestatus!=''">
+#{storestatus},
+</if>
+</trim>
+)
+</insert>
+
+<resultMap type="Storebill" id="storeList">
+		<id property="tomerchid" column="tomerchid" />
+		<association property="merchbill" javaType="Merchbill">
+			<id property="merchid" column="merchid" />
+			<result property="fullname" column="fullname" />
+		</association>
+	</resultMap>
+<select id="getAllStorebill" parameterType="Storebill" resultMap="storeList">
+SELECT * FROM storebill s,merchbill m
+<where>
+s.tomerchID=m.merchID and s.storestatus='1'
+<if test="tomerchid>0">
+and s.tomerchid=#{tomerchid}
+</if>
+</where>
+${pageSql}
+</select>
+</mapper>

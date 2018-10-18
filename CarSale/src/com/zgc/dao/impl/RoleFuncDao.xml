@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zgc.dao.RoleFuncDao">
+	<select id="getAllRoleFunc" parameterType="RoleFunc" resultType="RoleFunc">
+		SELECT * FROM role_func
+		<where>
+			<if test="roleid>0">
+				and roleid=#{roleid}
+			</if>
+			<if test="status!=null and status!=''">
+				and status=#{status}
+			</if>
+		</where>
+	</select>
+
+	<delete id="delRoleFunc" parameterType="RoleFunc">
+		UPDATE role_func SET `STATUS`='0' WHERE roleid=#{roleid}
+	</delete>
+
+	<select id="getRoleFuncByRoleFunc" parameterType="RoleFunc"
+		resultType="RoleFunc">
+		SELECT * FROM role_func
+		<where>
+			<if test="roleid>0">
+				and roleid=#{roleid}
+			</if>
+			<if test="funcid>0">
+				and funcid=#{funcid}
+			</if>
+		</where>
+	</select>
+
+	<update id="updateRoleFunc" parameterType="RoleFunc">
+		UPDATE role_func
+		<set>
+			<if test="status!=null and status!=''">
+				`STATUS`='1',
+			</if>
+			<if test="last_upd_time==last_upd_time">
+				last_upd_time=NOW(),
+			</if>
+			<if test="last_upd_by>0">
+				last_upd_by=#{last_upd_by},
+			</if>
+			<if test="createdtime==createdtime">
+				createdtime=NOW(),
+			</if>
+			<if test="createdby>0">
+				createdby=#{createdby},
+			</if>
+		</set>
+		<where>
+			<if test="roleid>0">
+				and roleid=#{roleid}
+			</if>
+			<if test="funcid>0">
+				and funcid=#{funcid}
+			</if>
+		</where>
+	</update>
+
+	<insert id="addRoleFunc" parameterType="RoleFunc">
+		INSERT INTO role_func(
+		<trim suffixOverrides=",">
+			<if test="createdby>0">
+				createdby,
+			</if>
+			<if test="createdtime!=null">
+				createdtime,
+			</if>
+			<if test="funcid>0">
+				funcid,
+			</if>
+			<if test="roleid>0">
+				roleid,
+			</if>
+			<if test="status!=null">
+				status,
+			</if>
+		</trim>
+		)
+		VALUES(
+		<trim suffixOverrides=",">
+			<if test="createdby>0">
+				#{createdby},
+			</if>
+			<if test="createdtime!=null">
+				#{createdtime},
+			</if>
+			<if test="funcid>0">
+				#{funcid},
+			</if>
+			<if test="roleid>0">
+				#{roleid},
+			</if>
+			<if test="status!=null">
+				#{status},
+			</if>
+		</trim>
+		)
+	</insert>
+</mapper>

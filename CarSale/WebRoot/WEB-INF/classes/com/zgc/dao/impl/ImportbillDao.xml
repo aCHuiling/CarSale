@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zgc.dao.ImportbillDao">
+<resultMap type="Importbill" id="importList">
+		<id property="merchbillid" column="merchbillid" />
+		<association property="merchbill" javaType="Merchbill">
+			<id property="merchid" column="merchID" />
+			<result property="fullname" column="fullname" />
+		</association>
+	</resultMap>
+<select id="getAllImportbill" parameterType="Importbill" resultMap="importList">
+SELECT * FROM importbill i,merchbill m
+<where>
+i.merchbillid=m.merchid and i.impstatus='1'
+<if test="importbillid!=null and importbillid!=''">
+and i.importbillid=#{importbillid}
+</if>
+</where>
+${pageSql} 
+</select>
+
+<insert id="addImportbill" parameterType="Importbill">
+INSERT INTO importbill(
+<trim suffixOverrides=",">
+<if test="importbillid!=null and importbillid!=''">
+importbillid,
+</if>
+<if test="merchbillid>0">
+merchbillid,
+</if>
+<if test="importprice>0">
+importprice,
+</if>
+<if test="quantity>0">
+quantity,
+</if>
+<if test="totalmoney>0">
+totalmoney,
+</if>
+<if test="importdate!=null and importdate!=''">
+importdate,
+</if>
+<if test="impothers!=null and impothers!=''">
+impothers,
+</if>
+<if test="impstatus!=null and impstatus!=''">
+impstatus,
+</if>
+</trim>
+)
+VALUES(
+<trim suffixOverrides=",">
+<if test="importbillid!=null and importbillid!=''">
+#{importbillid},
+</if>
+<if test="merchbillid>0">
+#{merchbillid},
+</if>
+<if test="importprice>0">
+#{importprice},
+</if>
+<if test="quantity>0">
+#{quantity},
+</if>
+<if test="totalmoney>0">
+#{totalmoney},
+</if>
+<if test="importdate!=null and importdate!=''">
+#{importdate},
+</if>
+<if test="impothers!=null and impothers!=''">
+#{impothers},
+</if>
+<if test="impstatus!=null and impstatus!=''">
+#{impstatus},
+</if>
+</trim>
+)
+</insert>
+
+
+<update id="updateImportbill" parameterType="Importbill">
+UPDATE importbill 
+<set>
+<if test="merchbillid>0">
+merchbillid=#{merchbillid},
+</if>
+<if test="importprice>0">
+importprice=#{importprice},
+</if>
+<if test="quantity>0">
+quantity=#{quantity},
+</if>
+<if test="totalmoney>0">
+totalmoney=#{totalmoney},
+</if>
+<if test="importdate!=null and importdate!=''">
+importdate=#{importdate},
+</if>
+<if test="impothers!=null and impothers!=''">
+impothers=#{impothers},
+</if>
+<if test="impstatus!=null and impstatus!=''">
+impstatus=#{impstatus}
+</if>
+</set>
+<where>
+<if test="importbillid!=null and importbillid!=''">
+importbillid=#{importbillid}
+</if>
+</where>
+</update>
+
+<select id="getImportbillByImportbill" parameterType="Importbill" resultType="Importbill">
+SELECT * FROM importbill
+<where>
+<if test="importbillid!=null and importbillid!=''">
+importbillid=#{importbillid}
+</if>
+</where>
+</select>
+</mapper>
